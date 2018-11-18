@@ -13,13 +13,11 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 
-import data_evaluation.StatisticsPrinter;
 import data_export.PitMergedMutationsWriter;
 import data_import.pit.data_objects.PitMethod;
-import data_import.pit.data_objects.PitTestCase;
 
 public class Main {
-	public static final String PIT_MUTATIONS_BASE_DIR = "C:\\study\\SWDiag\\sharedFolder_UbuntuVM\\MA\\pit_data_subset\\";
+	public static final String PIT_MUTATIONS_BASE_DIR = "C:\\study\\SWDiag\\sharedFolder_UbuntuVM\\MA\\pit_data\\";
 	public static final String PIT_DATA_FOLDER_NAME = "pit-data\\";
 	private static XPath xPath;
 	
@@ -49,12 +47,12 @@ public class Main {
 	    	System.out.println("INFO: Merging files...");
 	    	merger.mergeMutationNodes(mutationDocuments);
 	    	List<PitMethod> methods = merger.getMergedMethods();
-	    	List<PitTestCase> allTests = merger.getAllTests();
-	    	StatisticsPrinter statistics = new StatisticsPrinter(methods, allTests);
-	    	statistics.printTestStatistics();
+	    	//List<PitTestCase> allTests = merger.getAllTests();
+	    	//StatisticsPrinter statistics = new StatisticsPrinter(methods, allTests);
+	    	//statistics.printTestStatistics();
 	    	String outputDir = projectDirectory.getPath() + "\\" + PIT_DATA_FOLDER_NAME;
 	    	PitMergedMutationsWriter.writeMergedMethodsAndMutationsFile(outputDir, methods);
-	    	PitMergedMutationsWriter.writeAllTestsFile(outputDir, allTests);
+	    	//PitMergedMutationsWriter.writeAllTestsFile(outputDir, allTests);
 	    }
 	    System.out.println("INFO: Merging of documents finished!");
 	}

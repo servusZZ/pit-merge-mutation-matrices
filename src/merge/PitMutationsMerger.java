@@ -1,6 +1,7 @@
 package merge;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -18,8 +19,13 @@ import org.w3c.dom.NodeList;
 import data_import.pit.data_objects.EPitMutationStatus;
 import data_import.pit.data_objects.PitMethod;
 import data_import.pit.data_objects.PitMutation;
-import data_import.pit.data_objects.PitTestCase;
 
+/**
+ * During the process of merging methods, no linkage between methods/ mutations and test case objects 
+ * are created. Instead, only a set of test case names is filled. (Due to a StackOverflowError that
+ * otherwise appears during xml serialization because of the deep nesting of objects)
+ * 
+ */
 public class PitMutationsMerger {
 	private final static String METHOD_ID_SEPARATOR_CHAR = ":";
 	private final static String TESTS_SEPARATOR_CHAR = "\\|";
@@ -50,10 +56,10 @@ public class PitMutationsMerger {
 	private XPathExpression m_statusAttributeXPath;
 	
 	private Map<String, PitMethod> methods;
-	private Map<String, PitTestCase> tests;
+	//private Map<String, PitTestCase> tests;
 	
 	private List<PitMethod> methodsList;
-	private List<PitTestCase> testsList;
+	//private List<PitTestCase> testsList;
 	
 	public PitMutationsMerger() throws XPathExpressionException {
 		m_mutationNodeXPath = Main.compileXPath("mutations/mutation");
@@ -69,9 +75,9 @@ public class PitMutationsMerger {
 		m_sourceFileNameTextXPath = Main.compileXPath("./sourceFile/text()");
 		m_statusAttributeXPath = Main.compileXPath("./@status");;
 		methods = new HashMap<String, PitMethod>();
-		tests = new HashMap<String, PitTestCase>();
+		//tests = new HashMap<String, PitTestCase>();
 		methodsList	= new ArrayList<PitMethod>();
-		testsList = new ArrayList<PitTestCase>();
+		//testsList = new ArrayList<PitTestCase>();
 	}
 	/**
 	 * Calls mergeMethodsPerDocument for each document.
@@ -95,8 +101,8 @@ public class PitMutationsMerger {
 				methods.put(method.getId(), method);
 			}
 			// update PitMethod and allTests map
-			Set<PitTestCase> newCoveringTests = updateTests(mutationNodes.item(i), method);
-			method.updateCoveringTests(newCoveringTests);
+			//Set<PitTestCase> newCoveringTests = updateTests(mutationNodes.item(i), method);
+			method.updateCoveringTestsNames(getCoveringTestNames(mutationNodes.item(i)));
 			PitMutation mutation = method.getMutation(getMutatorName(mutationNodes.item(i)));
 			if (mutation == null) {
 				// create new PitMutation
@@ -109,19 +115,19 @@ public class PitMutationsMerger {
 			} else { // update Status
 				mutation.setStatus(EPitMutationStatus.mergeStatus(mutation.getStatus(), getMutationStatus(mutationNodes.item(i))));
 			}
-			Set<PitTestCase> killingTests = getTestCasesFromNames(getKillingTestNames(mutationNodes.item(i)));
-			updatePossibleFaultsOfTests(killingTests, mutation);
-			mutation.updateKillingTests(killingTests);
+			//Set<PitTestCase> killingTests = getTestCasesFromNames(getKillingTestNames(mutationNodes.item(i)));
+			//updatePossibleFaultsOfTests(killingTests, mutation);
+			mutation.updateKillingTestsNames(new HashSet<String>(Arrays.asList(getKillingTestNames(mutationNodes.item(i)))));
 		}
 	}
-	private void updatePossibleFaultsOfTests(Set<PitTestCase> killingTests, PitMutation mutation) {
+	/*private void updatePossibleFaultsOfTests(Set<PitTestCase> killingTests, PitMutation mutation) {
 		if (!EPitMutationStatus.isFault(mutation)) {
 			return;
 		}
 		for (PitTestCase killingTest: killingTests) {
 			killingTest.addPossibleFault(mutation);
 		}
-	}
+	}	*/
 	private String getMethodId(Node mutationNode) throws XPathExpressionException {
 		return m_mutatedClassTextXPath.evaluate(mutationNode, XPathConstants.STRING) + METHOD_ID_SEPARATOR_CHAR
 		+ m_mutatedMethodTextXPath.evaluate(mutationNode, XPathConstants.STRING) + METHOD_ID_SEPARATOR_CHAR
@@ -162,16 +168,16 @@ public class PitMutationsMerger {
 	 * And returns all covering Tests for this Method.
 	 * @return covering tests (union of killing and succeeding)
 	 */
-	private Set<PitTestCase> updateTests(Node mutationNode, PitMethod method) throws XPathExpressionException{
+	/*private Set<PitTestCase> updateTests(Node mutationNode, PitMethod method) throws XPathExpressionException{
 		Set<PitTestCase> coveringTests = createOrUpdateTests(getKillingTestNames(mutationNode), method);
 		coveringTests.addAll(createOrUpdateTests(getSucceedingTestNames(mutationNode), method));
 		return coveringTests;
-	}
+	}	*/
 	/**
 	 * updates the tests Map for the passed tests and returns the respective 
 	 * PitTestCase objects for all passed tests as strings.
 	 */
-	private Set<PitTestCase> createOrUpdateTests(String[] newTests, PitMethod method) {
+	/*private Set<PitTestCase> createOrUpdateTests(String[] newTests, PitMethod method) {
 		Set<PitTestCase> passedTests = new HashSet<PitTestCase>();
 		if (newTests == null || newTests.length == 0) {
 			return passedTests;
@@ -186,19 +192,25 @@ public class PitMutationsMerger {
 			passedTests.add(test);
 		}
 		return passedTests;
+	}	*/
+	private Set<String> getCoveringTestNames(Node mutationNode) throws XPathExpressionException {
+		Set<String> coveringTests = new HashSet<String>(Arrays.asList(getKillingTestNames(mutationNode)));
+		coveringTests.addAll(Arrays.asList(getSucceedingTestNames(mutationNode)));
+		return coveringTests;
 	}
 	private String[] getKillingTestNames(Node mutationNode) throws XPathExpressionException {
 		String killingTestsString = (String)m_killingTestTextXPath.evaluate(mutationNode, XPathConstants.STRING);
 		if (killingTestsString.isEmpty()) {
-			return null;
+			return new String[] {};
 		}
 		killingTestsString = killingTestsString.replaceAll(REGEX_TEXT_IN_BRACKETS, "");
 		return killingTestsString.split(TESTS_SEPARATOR_CHAR);
 	}
+	
 	private String[] getSucceedingTestNames(Node mutationNode) throws XPathExpressionException{
 		String succeedingTestsString = (String)m_succeedingTestTextXPath.evaluate(mutationNode, XPathConstants.STRING);
 		if (succeedingTestsString.isEmpty()) {
-			return null;
+			return new String[] {};
 		}
 		succeedingTestsString = succeedingTestsString.replaceAll(REGEX_TEXT_IN_BRACKETS, "");
 		return succeedingTestsString.split(TESTS_SEPARATOR_CHAR);
@@ -207,7 +219,7 @@ public class PitMutationsMerger {
 	 * Returns the PitTestCase objects contained in the tests map of all
 	 * passed test names.
 	 */
-	private Set<PitTestCase> getTestCasesFromNames(String[] testNames) throws Exception {
+	/*private Set<PitTestCase> getTestCasesFromNames(String[] testNames) throws Exception {
 		Set<PitTestCase> testCases = new HashSet<PitTestCase>();
 		if (testNames == null || testNames.length == 0) {
 			return testCases;
@@ -220,7 +232,7 @@ public class PitMutationsMerger {
 			}
 		}
 		return testCases;
-	}
+	}	*/
 	public List<PitMethod> getMergedMethods(){
 		if (methodsList.isEmpty()) {
 			for (PitMethod method:methods.values()) {
@@ -229,12 +241,12 @@ public class PitMutationsMerger {
 		}
 		return methodsList;
 	}
-	public List<PitTestCase> getAllTests(){
+	/*public List<PitTestCase> getAllTests(){
 		if (testsList.isEmpty()) {
 			for (PitTestCase test:tests.values()) {
 				testsList.add(test);
 			}
 		}
 		return testsList;
-	}
+	}	*/
 }

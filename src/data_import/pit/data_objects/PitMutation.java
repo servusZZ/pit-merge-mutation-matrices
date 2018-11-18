@@ -11,6 +11,7 @@ public class PitMutation {
 	private String description;
 	private EPitMutationStatus status;
 	private Set<PitTestCase> killingTests;
+	private Set<String> killingTestsNames;
 	/** ONLY NEEDED FOR SERIALIZATION */
 	public PitMutation() {
 		
@@ -23,13 +24,21 @@ public class PitMutation {
 		this.description = description;
 		this.setStatus(status);
 		killingTests = new HashSet<PitTestCase>();
+		killingTestsNames = new HashSet<String>();
 	}
 	/**	adds the passed killing tests to the currently killing tests */
-	public void updateKillingTests(Set<PitTestCase> killingTests) {
+	/*public void updateKillingTests(Set<PitTestCase> killingTests) {
 		if (killingTests.isEmpty()) {
 			return;
 		}
 		this.killingTests.addAll(killingTests);
+	}	*/
+	/**	adds the passed killing tests names to the currently killing tests names */
+	public void updateKillingTestsNames(Set<String> killingTestsNames) {
+		if (killingTestsNames.isEmpty()) {
+			return;
+		}
+		this.killingTestsNames.addAll(killingTestsNames);
 	}
 	public String getMutator() {
 		return mutator;
@@ -71,6 +80,12 @@ public class PitMutation {
 	}
 	public void setKillingTests(Set<PitTestCase> killingTests) {
 		this.killingTests = killingTests;
+	}
+	public Set<String> getKillingTestsNames() {
+		return killingTestsNames;
+	}
+	public void setKillingTestsNames(Set<String> killingTestsNames) {
+		this.killingTestsNames = killingTestsNames;
 	}
 	
 }

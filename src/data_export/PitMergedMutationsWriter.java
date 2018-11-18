@@ -36,7 +36,9 @@ public class PitMergedMutationsWriter {
 		System.out.println("INFO: Writing all tests to file " + outputDir + MERGED_TESTS_FILE_NAME);
 		FileOutputStream fos = new FileOutputStream(new File(outputDir + MERGED_TESTS_FILE_NAME));
 		XMLEncoder encoder = new XMLEncoder(fos);
-		encoder.writeObject(tests);
+		for (PitTestCase test: tests) {
+			encoder.writeObject(test);
+		}
 		encoder.close();
 		fos.close();
 	}

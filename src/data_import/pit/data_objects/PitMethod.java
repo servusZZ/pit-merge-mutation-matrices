@@ -5,17 +5,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.xpath.XPathExpression;
-
 import merge.PitMutationsMerger;
 
 public class PitMethod {
-	private String sourceFile;
-	private String className;
-	private String methodName;
-	private String methodTypeSignature;
-	private String id;
+	protected String sourceFile;
+	protected String className;
+	protected String methodName;
+	protected String methodTypeSignature;
+	protected String id;
 	private Set<PitTestCase> coveringTests;
+	private Set<String> coveringTestsNames;
 	private List<PitMutation> mutations;
 	
 	/** ONLY NEEDED FOR SERIALIZATION */
@@ -28,13 +27,20 @@ public class PitMethod {
 		this.methodTypeSignature = methodTypeSignature;
 		id = PitMutationsMerger.getMethodId(className, methodName, methodTypeSignature);
 		coveringTests = new HashSet<PitTestCase>();
+		coveringTestsNames = new HashSet<String>();
 		mutations = new ArrayList<PitMutation>();
 	}
-	public void updateCoveringTests(Set<PitTestCase> newCoveringTests) {
+	/*public void updateCoveringTests(Set<PitTestCase> newCoveringTests) {
 		if (newCoveringTests.isEmpty()) {
 			return;
 		}
 		coveringTests.addAll(newCoveringTests);
+	}	*/
+	public void updateCoveringTestsNames(Set<String> newCoveringTestsNames) {
+		if (newCoveringTestsNames.isEmpty()) {
+			return;
+		}
+		coveringTestsNames.addAll(newCoveringTestsNames);
 	}
 	public boolean hasMutation(String mutator) {
 		for (PitMutation mutation: mutations) {
@@ -104,6 +110,13 @@ public class PitMethod {
 	}
 	public void setMutations(List<PitMutation> mutations) {
 		this.mutations = mutations;
+	}
+	
+	public Set<String> getCoveringTestsNames() {
+		return coveringTestsNames;
+	}
+	public void setCoveringTestsNames(Set<String> coveringTestsNames) {
+		this.coveringTestsNames = coveringTestsNames;
 	}
 	@Override
 	public String toString() {
