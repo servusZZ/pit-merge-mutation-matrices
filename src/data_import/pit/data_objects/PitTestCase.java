@@ -14,9 +14,7 @@ public class PitTestCase {
 	private Set<PitMutation> possibleFaults;
 	
 	/** ONLY NEEDED FOR SERIALIZATION */
-	public PitTestCase() {
-		
-	}
+	public PitTestCase() { }
 	public PitTestCase(String name) {
 		this.name = name;
 		coveredMethods = new HashSet<PitMethod>();

@@ -120,6 +120,10 @@ public class PitMutationsMerger {
 			mutation.updateKillingTestsNames(new HashSet<String>(Arrays.asList(getKillingTestNames(mutationNodes.item(i)))));
 		}
 	}
+	public void reset() {
+		methods = new HashMap<String, PitMethod>();
+		methodsList	= new ArrayList<PitMethod>();
+	}
 	/*private void updatePossibleFaultsOfTests(Set<PitTestCase> killingTests, PitMutation mutation) {
 		if (!EPitMutationStatus.isFault(mutation)) {
 			return;
