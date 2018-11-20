@@ -28,6 +28,7 @@ import data_import.pit.data_objects.PitMutation;
  */
 public class PitMutationsMerger {
 	private final static String METHOD_ID_SEPARATOR_CHAR = ":";
+	private final static String MUTATION_ID_SEPARATOR_CHAR = ":";
 	private final static String TESTS_SEPARATOR_CHAR = "\\|";
 	private final static String REGEX_TEXT_IN_BRACKETS = "\\([^(]*\\)";
 	/** Mutation node. */
@@ -106,7 +107,8 @@ public class PitMutationsMerger {
 			PitMutation mutation = method.getMutation(getMutatorName(mutationNodes.item(i)));
 			if (mutation == null) {
 				// create new PitMutation
-				mutation = new PitMutation(getMutatorName(mutationNodes.item(i)),
+				mutation = new PitMutation(getMutationId(method.getId(), getMutatorName(mutationNodes.item(i))),
+						getMutatorName(mutationNodes.item(i)),
 						getLineNumber(mutationNodes.item(i)),
 						getIndex(mutationNodes.item(i)),
 						getDescription(mutationNodes.item(i)),
@@ -139,6 +141,9 @@ public class PitMutationsMerger {
 	}
 	public static String getMethodId(String className, String methodName, String methodTypeSignature) {
 		return className + METHOD_ID_SEPARATOR_CHAR + methodName + METHOD_ID_SEPARATOR_CHAR + methodTypeSignature;
+	}
+	public static String getMutationId(String methodID, String mutator) {
+		return methodID + MUTATION_ID_SEPARATOR_CHAR + mutator;
 	}
 	private String getClassName(Node mutationNode) throws XPathExpressionException {
 		return (String)m_mutatedClassTextXPath.evaluate(mutationNode, XPathConstants.STRING);

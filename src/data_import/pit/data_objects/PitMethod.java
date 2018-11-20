@@ -36,6 +36,9 @@ public class PitMethod {
 		}
 		coveringTests.addAll(newCoveringTests);
 	}	*/
+	public void addCoveringTest(PitTestCase newTest) {
+		coveringTests.add(newTest);
+	}
 	public void updateCoveringTestsNames(Set<String> newCoveringTestsNames) {
 		if (newCoveringTestsNames.isEmpty()) {
 			return;

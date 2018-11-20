@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PitMutation {
+	/**	unique id for each mutation <methodID>:<mutator>*/
+	private String id;
 	/**	unique for each method */
 	private String mutator;
 	private String lineNumber;
@@ -16,8 +18,9 @@ public class PitMutation {
 	public PitMutation() {
 		
 	}
-	public PitMutation(String mutator, String lineNumber,
+	public PitMutation(String id,String mutator, String lineNumber,
 			String index, String description, EPitMutationStatus status) {
+		this.id = id;
 		this.mutator = mutator;
 		this.lineNumber = lineNumber;
 		this.index = index;
@@ -33,6 +36,9 @@ public class PitMutation {
 		}
 		this.killingTests.addAll(killingTests);
 	}	*/
+	public void addKillingTest(PitTestCase newTest) {
+		killingTests.add(newTest);
+	}
 	/**	adds the passed killing tests names to the currently killing tests names */
 	public void updateKillingTestsNames(Set<String> killingTestsNames) {
 		if (killingTestsNames.isEmpty()) {
@@ -87,5 +93,10 @@ public class PitMutation {
 	public void setKillingTestsNames(Set<String> killingTestsNames) {
 		this.killingTestsNames = killingTestsNames;
 	}
-	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
 }
