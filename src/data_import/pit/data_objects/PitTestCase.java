@@ -4,9 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * This class is not used during the merging. Only after the import of the merged methods xml file
- * the test case objects are created.
- *
+ * This class is not used during the merging.
+ * Only after the import of the merged methods xml file the test case objects are created.
  */
 public class PitTestCase {
 	private String name;
