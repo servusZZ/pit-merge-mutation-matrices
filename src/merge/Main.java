@@ -17,7 +17,7 @@ import data_export.PitMergedMutationsWriter;
 import data_import.pit.data_objects.PitMethod;
 
 public class Main {
-	public static final String PIT_MUTATIONS_BASE_DIR = "C:\\study\\SWDiag\\sharedFolder_UbuntuVM\\MA\\pit_data\\";
+	public static final String PIT_MUTATIONS_BASE_DIR = "C:\\study\\SWDiag\\sharedFolder_UbuntuVM\\MA\\pit_data_tests\\";
 	public static final String PIT_DATA_FOLDER_NAME = "pit-data\\";
 	private static XPath xPath;
 	

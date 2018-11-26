@@ -29,7 +29,8 @@ import data_import.pit.data_objects.PitMutation;
 public class PitMutationsMerger {
 	private final static String METHOD_ID_SEPARATOR_CHAR = ":";
 	private final static String MUTATION_ID_SEPARATOR_CHAR = ":";
-	private final static String TESTS_SEPARATOR_CHAR = "\\|";
+	private final static String TESTS_SEPARATOR_CHAR = "|";
+	private final static String TESTS_SEPARATOR_CHAR_REGEX = "\\|";
 	private final static String REGEX_TEXT_IN_BRACKETS = "\\([^(]*\\)";
 	/** Mutation node. */
 	private XPathExpression m_mutationNodeXPath;
@@ -41,10 +42,14 @@ public class PitMutationsMerger {
 	private XPathExpression m_methodTypeSignatureTextXPath;
 	/** Mutator node of mutation node. */
 	private XPathExpression m_mutatorNameTextXPath;
+	
+//	protected XPathExpression m_killingTestTextXPath;
 	/** Killing test node of mutation node. */
-	protected XPathExpression m_killingTestTextXPath;
+	protected XPathExpression m_exceptionKillingTestsTextXPath;
+	/** Killing test node of mutation node. */
+	protected XPathExpression m_assertionKillingTestsTextXPath;
 	/**	Succeeding test node of mutation node. */
-	protected XPathExpression m_succeedingTestTextXPath;
+	protected XPathExpression m_succeedingTestsTextXPath;
 	/** Index node of mutation node. */
 	private XPathExpression m_indexTextXPath;
 	/** Line number node of mutation node. */
@@ -68,8 +73,10 @@ public class PitMutationsMerger {
 		m_mutatedMethodTextXPath = Main.compileXPath("./mutatedMethod/text()");
 		m_methodTypeSignatureTextXPath = Main.compileXPath("./methodDescription/text()");
 		m_mutatorNameTextXPath = Main.compileXPath("./mutator/text()");
-		m_killingTestTextXPath = Main.compileXPath("./killingTest/text()");
-		m_succeedingTestTextXPath = Main.compileXPath("./succeedingTest/text()");
+//		m_killingTestTextXPath = Main.compileXPath("./killingTest/text()");
+		m_assertionKillingTestsTextXPath = Main.compileXPath("./assertionKillingTests/text()");
+		m_exceptionKillingTestsTextXPath = Main.compileXPath("./exceptionKillingTests/text()");
+		m_succeedingTestsTextXPath = Main.compileXPath("./succeedingTests/text()");
 		m_indexTextXPath = Main.compileXPath("./index/text()");
 		m_lineNumberTextXPath = Main.compileXPath("./lineNumber/text()");
 		m_descriptionTextXPath = Main.compileXPath("./description/text()");
@@ -208,21 +215,25 @@ public class PitMutationsMerger {
 		return coveringTests;
 	}
 	private String[] getKillingTestNames(Node mutationNode) throws XPathExpressionException {
-		String killingTestsString = (String)m_killingTestTextXPath.evaluate(mutationNode, XPathConstants.STRING);
+		String killingTestsString = (String)m_assertionKillingTestsTextXPath.evaluate(mutationNode, XPathConstants.STRING);
+		if (!killingTestsString.isEmpty()) {
+			killingTestsString += TESTS_SEPARATOR_CHAR;
+		}
+		killingTestsString += (String)m_exceptionKillingTestsTextXPath.evaluate(mutationNode, XPathConstants.STRING);
 		if (killingTestsString.isEmpty()) {
 			return new String[] {};
 		}
 		killingTestsString = killingTestsString.replaceAll(REGEX_TEXT_IN_BRACKETS, "");
-		return killingTestsString.split(TESTS_SEPARATOR_CHAR);
+		return killingTestsString.split(TESTS_SEPARATOR_CHAR_REGEX);
 	}
 	
 	private String[] getSucceedingTestNames(Node mutationNode) throws XPathExpressionException{
-		String succeedingTestsString = (String)m_succeedingTestTextXPath.evaluate(mutationNode, XPathConstants.STRING);
+		String succeedingTestsString = (String)m_succeedingTestsTextXPath.evaluate(mutationNode, XPathConstants.STRING);
 		if (succeedingTestsString.isEmpty()) {
 			return new String[] {};
 		}
 		succeedingTestsString = succeedingTestsString.replaceAll(REGEX_TEXT_IN_BRACKETS, "");
-		return succeedingTestsString.split(TESTS_SEPARATOR_CHAR);
+		return succeedingTestsString.split(TESTS_SEPARATOR_CHAR_REGEX);
 	}
 	/**
 	 * Returns the PitTestCase objects contained in the tests map of all
