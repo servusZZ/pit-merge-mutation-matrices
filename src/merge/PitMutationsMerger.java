@@ -16,9 +16,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import data_import.pit.data_objects.EPitMutationStatus;
-import data_import.pit.data_objects.PitMethod;
-import data_import.pit.data_objects.PitMutation;
+import pit.data_objects.EPitMutationStatus;
+import pit.data_objects.PitMethod;
+import pit.data_objects.PitMethodUtils;
+import pit.data_objects.PitMutation;
 
 /**
  * During the process of merging methods, no linkage between methods/ mutations and test case objects 
@@ -27,7 +28,6 @@ import data_import.pit.data_objects.PitMutation;
  * 
  */
 public class PitMutationsMerger {
-	private final static String METHOD_ID_SEPARATOR_CHAR = ":";
 	private final static String MUTATION_ID_SEPARATOR_CHAR = ":";
 	private final static String TESTS_SEPARATOR_CHAR = "|";
 	private final static String TESTS_SEPARATOR_CHAR_REGEX = "\\|";
@@ -142,12 +142,9 @@ public class PitMutationsMerger {
 		}
 	}	*/
 	private String getMethodId(Node mutationNode) throws XPathExpressionException {
-		return m_mutatedClassTextXPath.evaluate(mutationNode, XPathConstants.STRING) + METHOD_ID_SEPARATOR_CHAR
-		+ m_mutatedMethodTextXPath.evaluate(mutationNode, XPathConstants.STRING) + METHOD_ID_SEPARATOR_CHAR
-		+ m_methodTypeSignatureTextXPath.evaluate(mutationNode, XPathConstants.STRING);
-	}
-	public static String getMethodId(String className, String methodName, String methodTypeSignature) {
-		return className + METHOD_ID_SEPARATOR_CHAR + methodName + METHOD_ID_SEPARATOR_CHAR + methodTypeSignature;
+		return PitMethodUtils.getMethodId((String)m_mutatedClassTextXPath.evaluate(mutationNode, XPathConstants.STRING),
+				(String)m_mutatedMethodTextXPath.evaluate(mutationNode, XPathConstants.STRING),
+				(String)m_methodTypeSignatureTextXPath.evaluate(mutationNode, XPathConstants.STRING));
 	}
 	public static String getMutationId(String methodID, String mutator) {
 		return methodID + MUTATION_ID_SEPARATOR_CHAR + mutator;

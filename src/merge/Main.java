@@ -14,7 +14,7 @@ import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 
 import data_export.PitMergedMutationsWriter;
-import data_import.pit.data_objects.PitMethod;
+import pit.data_objects.PitMethod;
 
 public class Main {
 	public static final String PIT_MUTATIONS_BASE_DIR = "C:\\study\\SWDiag\\sharedFolder_UbuntuVM\\MA\\pit_data_tests\\";

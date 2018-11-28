@@ -9,8 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import data_import.pit.data_objects.PitMethod;
-import data_import.pit.data_objects.PitTestCase;
+import pit.data_objects.PitMethod;
+import pit.data_objects.PitTestCase;
 
 public class PitMergedMutationsWriter {
 	public static final String MERGED_METHODS_FILE_NAME = "methods-and-mutations-merged.xml";
